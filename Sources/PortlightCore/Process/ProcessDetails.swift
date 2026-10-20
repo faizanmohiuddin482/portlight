@@ -37,4 +37,6 @@ public struct ProcessDetails: Sendable, Equatable {
 public protocol ProcessInspecting: Sendable {
     func details(pid: Int32) -> ProcessDetails?
     func identity(pid: Int32) -> ProcessIdentity?
+    /// Short command name; works for every user's processes, unlike `details`.
+    func processName(pid: Int32) -> String?
 }

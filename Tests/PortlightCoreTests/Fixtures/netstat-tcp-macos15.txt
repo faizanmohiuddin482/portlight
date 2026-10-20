@@ -1,0 +1,6 @@
+Active Internet connections (including servers)
+Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)          rxbytes      txbytes  rhiwat  shiwat    pid   epid state  options           gencnt    flags   flags1 usecnt rtncnt fltrs
+tcp4       0      0  127.0.0.1.8765         *.*                    LISTEN                 0            0  131072  131072   1728      0 00000 00000006 0000000000000c2b 00000000 00000900      1      0 000000
+tcp4       0      0  *.22                   *.*                    LISTEN                 0            0  131072  131072      1      0 00180 00000006 0000000000000084 00000000 00000900      1      0 000000
+tcp6       0      0  *.22                   *.*                    LISTEN                 0            0  131072  131072      1      0 00180 00000006 0000000000000083 00000000 00000800      1      0 000000
+tcp4       0      0  192.168.1.10.57092     20.0.0.1.443           ESTABLISHED         9118        30517  131072  132432   2001      0 00102 00000008 0000000001519a44 00000080 04000900      2      0 000000

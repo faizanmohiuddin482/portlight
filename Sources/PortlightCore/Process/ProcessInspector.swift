@@ -9,6 +9,17 @@ public struct ProcessInspector: ProcessInspecting {
         bsdInfo(pid).map(Self.identity)
     }
 
+    public func processName(pid: Int32) -> String? {
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.size
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, pid]
+        guard sysctl(&mib, 4, &info, &size, nil, 0) == 0, size > 0 else { return nil }
+        let name = withUnsafeBytes(of: info.kp_proc.p_comm) { raw in
+            String(decoding: raw.prefix { $0 != 0 }, as: UTF8.self)
+        }
+        return name.isEmpty ? nil : name
+    }
+
     public func details(pid: Int32) -> ProcessDetails? {
         guard let info = bsdInfo(pid) else { return nil }
         return ProcessDetails(

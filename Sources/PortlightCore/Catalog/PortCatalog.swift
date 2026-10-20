@@ -11,8 +11,10 @@ public enum PortCatalog {
         }
 
         return groups.map { key, socks in
-            let name = socks[0].processName
             let details = detailsByPid[key.pid] ?? nil
+            let name = socks[0].processName.isEmpty
+                ? inspector.processName(pid: key.pid) ?? "PID \(key.pid)"
+                : socks[0].processName
             return PortEntry(
                 port: key.port,
                 proto: key.proto,

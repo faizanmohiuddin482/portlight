@@ -65,6 +65,13 @@ Follow Apple's Human Interface Guidelines: SF Pro, SF Symbols, system colours (b
 - **Refresh**: re-scan ports every 2 s while the panel or window is open, and every 15 s in the background (for history, alerts and the icon state). (Builder may tune.)
 - **Quit process**: send SIGTERM, then offer "Force Quit" (SIGKILL) if it is still alive after 3 s. Confirm the first time with a "Don't ask again" option. Processes owned by root or other users, and anything under `/System`, `/usr/libexec` or `/usr/sbin`, show no quit button.
 - **Idle/zombie**: a listening process counts as idle when it has had zero established connections and negligible CPU for at least 2 h (setting). "Zombie" means orphaned (parent is launchd/PID 1) and idle. Cleanup only offers the current user's processes.
+- **Free-up suggestions** (added 2026-10-20, owner approved): Clean Up shows a ranked list of processes worth quitting, each with a plain reason and its own Quit button, plus "Free all". Reasons, strongest first:
+  1. **Duplicate**: another dev server from the same project folder with the same label is already listening (the newer one is suggested).
+  2. **Orphaned**: its parent process has exited (parent is launchd, PID 1) and it is idle.
+  3. **Exposed and idle**: reachable from the network and idle. Ranked above plain idle because it's also a security risk.
+  4. **Idle**: zero established connections and negligible CPU for at least 2 h (setting).
+  - **Never suggested:** processes with a Stay Awake hold; processes `QuitPolicy` refuses; databases (`postgres`, `mongod`, `redis-server`, `mysqld`), because quitting them can lose data; anything with a connection in the last 5 minutes.
+  - When "Is port free?" finds the port taken by a quittable process, it shows that process with its reason (or "In use now" when there's no reason) and a Quit button.
 - **Stay Awake safeguards**: tied to the PID. Released on process exit, timer end (default "until it exits", options 1 h / 2 h / 4 h / custom), or app quit. Several processes can be kept awake at once.
 - **Lid Closed modes** (Claude's call): tying it to a process is optional. The user picks a process or "time only"; the maximum duration always applies either way.
 - **Lid Closed password** (Claude's call): one admin prompt each time it is turned on. Turning it off early, from the app, needs no second prompt: the app writes a stop flag to a user-owned file that the root watcher polls. The watcher only reads that file and never executes anything from it.

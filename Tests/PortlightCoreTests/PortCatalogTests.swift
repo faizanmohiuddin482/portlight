@@ -29,3 +29,16 @@ import Testing
     _ = PortCatalog.build([sock(.tcp, "*", 3000, pid: 5), sock(.tcp, "*", 9229, pid: 5)], inspector: f)
     #expect(f.detailCalls == [5])
 }
+
+@Test func namesProcessWhenNetstatDoesNot() {
+    let f = FakeInspector()
+    f.names[1728] = "Python"
+    let e = PortCatalog.build([ListeningSocket(proto: .tcp, address: "127.0.0.1", port: 8765, pid: 1728, processName: "")], inspector: f)
+    #expect(e[0].processName == "Python")
+    #expect(e[0].project.label == "Python")
+}
+
+@Test func fallsBackToPidLabel() {
+    let e = PortCatalog.build([ListeningSocket(proto: .tcp, address: "*", port: 22, pid: 1, processName: "")], inspector: FakeInspector())
+    #expect(e[0].processName == "PID 1")
+}

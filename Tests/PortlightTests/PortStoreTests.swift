@@ -18,6 +18,7 @@ final class ScriptedScanner: PortScanning, @unchecked Sendable {
 struct NoInspector: ProcessInspecting {
     func details(pid: Int32) -> ProcessDetails? { nil }
     func identity(pid: Int32) -> ProcessIdentity? { nil }
+    func processName(pid: Int32) -> String? { nil }
 }
 
 @MainActor @Test func olderScanCannotOverwriteNewer() async throws {

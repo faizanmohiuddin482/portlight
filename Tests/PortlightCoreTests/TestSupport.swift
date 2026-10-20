@@ -23,9 +23,11 @@ func sock(_ proto: TransportProtocol, _ address: String, _ port: UInt16, pid: In
 
 final class FakeInspector: ProcessInspecting, @unchecked Sendable {
     var seeded: [Int32: ProcessDetails] = [:]
+    var names: [Int32: String] = [:]
     private(set) var detailCalls: [Int32] = []
     func details(pid: Int32) -> ProcessDetails? { detailCalls.append(pid); return seeded[pid] }
     func identity(pid: Int32) -> ProcessIdentity? { seeded[pid]?.identity }
+    func processName(pid: Int32) -> String? { names[pid] }
 }
 
 struct SocketError: Error { let errno: Int32 }

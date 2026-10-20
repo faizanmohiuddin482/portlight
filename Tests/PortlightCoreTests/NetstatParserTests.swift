@@ -33,3 +33,21 @@ import Testing
 @Test func ignoresGarbage() {
     #expect(NetstatParser.parse("nonsense\n\n", proto: .tcp).isEmpty)
 }
+
+// macOS 14/15 print `pid epid` instead of `process:pid`, and macOS 14 has no
+// rxbytes/txbytes columns. The parser must follow the header, not fixed offsets.
+@Test(arguments: ["netstat-tcp-macos15.txt", "netstat-tcp-macos14.txt"])
+func parsesPidOnlyFormats(_ file: String) throws {
+    let s = NetstatParser.parse(try fixture(file), proto: .tcp)
+    try #require(s.map(\.port) == [8765, 22, 22])
+    #expect(s[0].pid == 1728)
+    #expect(s[0].processName == "")
+    #expect(s[0].reach == .local)
+    #expect(s[1].pid == 1)
+}
+
+@Test func parsesPidOnlyUdp() throws {
+    let s = NetstatParser.parse(try fixture("netstat-udp-macos14.txt"), proto: .udp)
+    try #require(s.map(\.port) == [5353])
+    #expect(s[0].pid == 400)
+}

@@ -36,3 +36,8 @@ import Testing
     #expect(d.arguments == ["/bin/sleep", "5"])
     #expect(d.parentPid == getpid())
 }
+
+@Test func namesProcessesOfOtherUsers() {
+    #expect(ProcessInspector().processName(pid: 1) == "launchd")
+    #expect(ProcessInspector().processName(pid: getpid())?.isEmpty == false)
+}
