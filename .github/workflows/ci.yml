@@ -13,5 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      # The macos-14 image defaults to Xcode 15 (Swift 5.10); the package needs Swift 6.
+      - run: sudo xcode-select -s "$(ls -d /Applications/Xcode_1[6-9]*.app | sort -V | tail -1)" && swift --version
       - run: swift build
       - run: swift test
