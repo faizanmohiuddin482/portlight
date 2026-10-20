@@ -25,6 +25,7 @@ struct PortCheckTile: View {
                             .foregroundStyle(.secondary)
                         Spacer()
                         InlineQuitButton(identity: identity).controlSize(.small)
+                            .id(identity)  // fresh Quit state when the port (and process) changes
                     }
                 }
                 if let port, !isFree(port), let next = FreePort.nearestFree(to: port, isFree: isFree) {

@@ -128,9 +128,11 @@ final class PortStore {
         return result
     }
 
-    /// Quits every current suggestion; returns how many are gone afterwards.
-    func freeAll() async -> Int {
-        let targets = suggestions.map(\.identity)
+    /// Quits the suggestions the user saw when they confirmed, skipping any that
+    /// are no longer suggested. Returns how many quit.
+    func freeAll(_ shown: [ProcessIdentity]) async -> Int {
+        let current = Set(suggestions.map(\.identity))
+        let targets = shown.filter(current.contains)
         var freed = 0
         await withTaskGroup(of: TerminateResult.self) { group in
             for identity in targets {

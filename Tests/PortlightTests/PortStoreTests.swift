@@ -75,3 +75,11 @@ struct SeededInspector: ProcessInspecting {
     #expect(store.suggestions.map(\.identity.pid) == [202])
     #expect(store.suggestion(for: 202)?.reason == .duplicate(project: "portlight", port: 3000))
 }
+
+@MainActor @Test func freeAllOnlyQuitsWhatWasShown() async {
+    let store = PortStore(stayAwake: StayAwakeManager(), scanner: ScriptedScanner([(0, []), (0, [])]), inspector: NoInspector())
+    // A target that isn't a current suggestion (e.g. it scrolled away or was
+    // never on screen) must not be signalled.
+    let notSuggested = ProcessIdentity(pid: getpid(), startTime: 1)
+    #expect(await store.freeAll([notSuggested]) == 0)
+}

@@ -5,6 +5,8 @@ import SwiftUI
 struct CleanUpTile: View {
     @Environment(PortStore.self) private var store
     @State private var confirmingAll = false
+    /// What was on screen when "Free" was first clicked; only these get quit.
+    @State private var armedTargets: [ProcessIdentity] = []
     @State private var freedMessage: String?
 
     var body: some View {
@@ -17,14 +19,16 @@ struct CleanUpTile: View {
                         Text(subtitle).font(.caption).foregroundStyle(.secondary)
                     }
                     Spacer()
-                    if store.suggestions.count > 1 { freeAllButton }
+                    if shown.count > 1 { freeAllButton }
                 }
-                ForEach(store.suggestions.prefix(3)) { suggestion in
+                ForEach(shown) { suggestion in
                     SuggestionRow(suggestion: suggestion)
                 }
             }
         }
     }
+
+    private var shown: [Suggestion] { Array(store.suggestions.prefix(3)) }
 
     private var subtitle: String {
         if let freedMessage { return freedMessage }
@@ -38,10 +42,11 @@ struct CleanUpTile: View {
     @ViewBuilder
     private var freeAllButton: some View {
         if confirmingAll {
-            Button("Free \(store.suggestions.count)?") {
+            Button("Free \(armedTargets.count)?") {
                 confirmingAll = false
+                let targets = armedTargets
                 Task {
-                    let freed = await store.freeAll()
+                    let freed = await store.freeAll(targets)
                     freedMessage = "Freed \(freed)"
                     try? await Task.sleep(for: .seconds(3))
                     freedMessage = nil
@@ -51,7 +56,8 @@ struct CleanUpTile: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
         } else {
-            Button("Free All") {
+            Button(shown.count == store.suggestions.count ? "Free All" : "Free \(shown.count)") {
+                armedTargets = shown.map(\.identity)
                 confirmingAll = true
                 Task {
                     try? await Task.sleep(for: .seconds(3))
