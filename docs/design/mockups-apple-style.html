@@ -1,0 +1,132 @@
+<h2>Apple‑native, clean and minimal: which shape?</h2>
+<p class="subtitle">All three use macOS's own look: SF Pro type, frosted‑glass panels, SF Symbol‑style icons, system blue and green, and lots of space. The difference is how the app is laid out. Click the ones you like.</p>
+
+<style>
+  .cards { grid-template-columns: 1fr !important; max-width: 720px; }
+  .card-image { aspect-ratio: auto !important; display: block !important; }
+  .stage { width: 100%; height: 380px; border-radius: 14px; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #c9d6f2 0%, #e9d8ef 50%, #f6e4d4 100%);
+    font-family: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif; color: #1d1d1f; }
+  .menubar { height: 24px; background: rgba(255,255,255,.55); backdrop-filter: blur(20px); display:flex; justify-content:flex-end; align-items:center; gap:14px; padding: 0 12px; font-size: 12px; }
+  .menubar .me { background: rgba(0,0,0,.12); border-radius: 5px; padding: 1px 7px; }
+  .glass { background: rgba(246,246,248,.82); backdrop-filter: blur(30px) saturate(180%); border: .5px solid rgba(0,0,0,.12);
+    box-shadow: 0 10px 40px rgba(0,0,0,.18), 0 0 0 .5px rgba(255,255,255,.6) inset; border-radius: 12px; }
+  .row { display:flex; align-items:center; gap:10px; padding: 7px 10px; border-radius: 7px; font-size: 13px; }
+  .row:hover { background: rgba(0,0,0,.05); }
+  .port { font-variant-numeric: tabular-nums; font-weight: 600; width: 46px; }
+  .proc { flex:1; }
+  .proc small { display:block; color:#86868b; font-size: 11px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:#34c759; flex:none; }
+  .dot.warn { background:#ff9f0a; } .dot.idle { background:#c7c7cc; }
+  .sym { width: 22px; height: 22px; border-radius: 6px; display:flex; align-items:center; justify-content:center; font-size: 12px; color:#86868b; }
+  .sym.on { color:#fff; background:#007aff; }
+  .sep { height:.5px; background: rgba(0,0,0,.1); margin: 6px 10px; }
+  .search { margin: 10px; padding: 6px 10px; border-radius: 7px; background: rgba(0,0,0,.06); font-size: 13px; color:#86868b; }
+  .hdr { font-size: 11px; font-weight: 600; color:#86868b; padding: 8px 12px 2px; }
+  .tile { background: rgba(255,255,255,.7); border-radius: 12px; padding: 12px; font-size: 12px; }
+  .tile b { font-size: 13px; display:block; margin-bottom: 2px; }
+  .circle { width: 30px; height: 30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,.08); font-size: 14px; }
+  .circle.on { background:#007aff; color:#fff; }
+  .pill { font-size: 11px; color:#007aff; }
+  .win { position:absolute; left: 18px; right: 18px; top: 40px; bottom: 18px; display:flex; overflow:hidden; }
+  .side { width: 150px; background: rgba(236,236,240,.7); padding: 30px 8px 8px; font-size: 13px; }
+  .side div { padding: 5px 8px; border-radius: 6px; }
+  .side .sel { background: rgba(0,0,0,.08); }
+  .traffic { position:absolute; left:12px; top:10px; display:flex; gap:6px; }
+  .traffic i { width:11px; height:11px; border-radius:50%; display:block; }
+  .main { flex:1; background: rgba(255,255,255,.9); padding: 14px 16px; }
+  .tbl { width:100%; border-collapse: collapse; font-size: 12px; }
+  .tbl th { text-align:left; color:#86868b; font-weight:500; padding: 4px 6px; border-bottom: .5px solid rgba(0,0,0,.1); }
+  .tbl td { padding: 6px; font-variant-numeric: tabular-nums; }
+  .tbl tr:nth-child(even) td { background: rgba(0,0,0,.025); }
+  .badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: rgba(255,159,10,.15); color:#c46a00; }
+</style>
+
+<div class="cards" data-multiselect>
+
+  <!-- A: Menu bar popover list -->
+  <div class="card" data-choice="popover" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="stage">
+      <div class="menubar"><span>⌘</span><span class="me">⇄ 7</span><span>Wi‑Fi</span><span>Tue 14:32</span></div>
+      <div class="glass" style="position:absolute; right: 70px; top: 30px; width: 300px;">
+        <div class="search">⌕  Search or type a port…</div>
+        <div class="hdr">qureos‑frontend</div>
+        <div class="row"><span class="dot"></span><span class="port">3000</span><span class="proc">next dev<small>localhost · 2h</small></span><span class="sym">☾</span><span class="sym">✕</span></div>
+        <div class="row"><span class="dot idle"></span><span class="port">6006</span><span class="proc">storybook<small>idle 9h</small></span><span class="sym">☾</span><span class="sym">✕</span></div>
+        <div class="hdr">api‑v3</div>
+        <div class="row"><span class="dot"></span><span class="port">4000</span><span class="proc">nest start<small>localhost · 142 conns</small></span><span class="sym on">☾</span><span class="sym">✕</span></div>
+        <div class="row"><span class="dot warn"></span><span class="port">8080</span><span class="proc">python ‑m http.server<small>visible on network</small></span><span class="sym">☾</span><span class="sym">✕</span></div>
+        <div class="sep"></div>
+        <div class="row" style="color:#86868b; font-size:12px">☾ Keeping Mac awake for api‑v3 · 1h 12m left</div>
+      </div>
+    </div></div>
+    <div class="card-body">
+      <h3>A · Menu bar popover</h3>
+      <p>Click the icon in the menu bar and a frosted list drops down, grouped by project. Each row has a moon to keep the Mac awake and an ✕ to quit the process. Type a port number to check whether it's free. It feels like the Wi‑Fi or Bluetooth menu.</p>
+    </div>
+  </div>
+
+  <!-- B: Control Center modules -->
+  <div class="card" data-choice="controlcenter" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="stage">
+      <div class="menubar"><span>⌘</span><span class="me">⇄</span><span>Wi‑Fi</span><span>Tue 14:32</span></div>
+      <div class="glass" style="position:absolute; right: 60px; top: 30px; width: 310px; padding: 10px; display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div class="tile" style="display:flex; gap:8px; align-items:center"><span class="circle on">☾</span><span><b>Stay Awake</b><span class="pill">api‑v3 · 1h 12m</span></span></div>
+        <div class="tile" style="display:flex; gap:8px; align-items:center"><span class="circle">▭</span><span><b>Lid Closed</b><span style="color:#86868b">Off</span></span></div>
+        <div class="tile" style="grid-column: span 2">
+          <b>Listening</b>
+          <div style="display:flex; gap:18px; margin-top:6px; font-variant-numeric: tabular-nums">
+            <span><span style="font-size:22px; font-weight:600">7</span><br><span style="color:#86868b">ports</span></span>
+            <span><span style="font-size:22px; font-weight:600; color:#ff9f0a">1</span><br><span style="color:#86868b">on network</span></span>
+            <span><span style="font-size:22px; font-weight:600; color:#86868b">2</span><br><span style="color:#86868b">idle</span></span>
+          </div>
+        </div>
+        <div class="tile" style="grid-column: span 2">
+          <b>Is port free?</b>
+          <div style="display:flex; justify-content:space-between; margin-top:6px"><span style="background:rgba(0,0,0,.06); padding:4px 10px; border-radius:6px">3000</span><span style="color:#ff3b30">In use · next dev</span></div>
+          <div style="color:#86868b; margin-top:4px">Nearest free: <span class="pill">3001</span></div>
+        </div>
+        <div class="tile" style="grid-column: span 2; display:flex; justify-content:space-between; align-items:center"><span><b>Clean Up</b><span style="color:#86868b">2 idle processes</span></span><span class="circle">✕</span></div>
+      </div>
+    </div></div>
+    <div class="card-body">
+      <h3>B · Control Center tiles</h3>
+      <p>Rounded tiles like macOS Control Center: big toggles for "Stay Awake" and "Lid Closed", an at‑a‑glance count, a free‑port checker and a one‑tap cleanup. Built for a quick glance; tap a tile to see the detailed list.</p>
+    </div>
+  </div>
+
+  <!-- C: Full window, System Settings style -->
+  <div class="card" data-choice="window" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="stage">
+      <div class="glass win">
+        <div class="traffic"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+        <div class="side">
+          <div class="sel">⇄  All Ports</div>
+          <div>▣  By Project</div>
+          <div>☾  Stay Awake</div>
+          <div>◎  On Network</div>
+          <div>◷  History</div>
+        </div>
+        <div class="main">
+          <div style="font-size:17px; font-weight:600; margin-bottom:10px">All Ports</div>
+          <table class="tbl">
+            <tr><th>Port</th><th>Process</th><th>Project</th><th>Reach</th><th></th></tr>
+            <tr><td><b>3000</b></td><td>next dev</td><td>qureos‑frontend</td><td>Local</td><td style="color:#86868b">☾ ✕</td></tr>
+            <tr><td><b>4000</b></td><td>nest start</td><td>api‑v3</td><td>Local</td><td style="color:#007aff">☾ <span style="color:#86868b">✕</span></td></tr>
+            <tr><td><b>5432</b></td><td>postgres</td><td>—</td><td>Local</td><td style="color:#86868b">☾ ✕</td></tr>
+            <tr><td><b>6006</b></td><td>storybook</td><td>qureos‑frontend</td><td>Local</td><td style="color:#86868b">☾ ✕</td></tr>
+            <tr><td><b>8080</b></td><td>python</td><td>—</td><td><span class="badge">Network</span></td><td style="color:#86868b">☾ ✕</td></tr>
+            <tr><td><b>27017</b></td><td>mongod</td><td>—</td><td>Local</td><td style="color:#86868b">☾ ✕</td></tr>
+          </table>
+        </div>
+      </div>
+    </div></div>
+    <div class="card-body">
+      <h3>C · Full window</h3>
+      <p>A proper window like System Settings or Activity Monitor, with a sidebar of views (All, By Project, Stay Awake, On Network, History) and a sortable table. Best for digging in, but heavier for a quick check.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:18px">My guess: <b>A</b> as the everyday app, with <b>C</b> opening from "Open Ports Window…" at the bottom of the menu when you want the full picture. B is nicer to look at but hides the list one click deeper.</p>
