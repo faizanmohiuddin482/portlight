@@ -117,7 +117,7 @@ private func suggest(
 
 @Test func olderTwinNeverSuggestedAlongsideNewer() {
     // Older twin idle 3 h, newer idle 10 min: suggesting both would kill the project's only servers.
-    let s = suggest([entry(3000, pid: 101, start: 100), entry(3001, pid: 102, start: 200)], active: [101: 3 * hour, 102: 10 * 60])
+    let s = suggest([entry(3000, pid: 101, start: 100), entry(3001, pid: 102, start: 200)], active: [101: 3 * hour, 102: 10.0 * 60])
     #expect(s.map(\.identity.pid) == [102])
 }
 
