@@ -5,7 +5,12 @@ on:
   pull_request:
 jobs:
   test:
-    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        # Oldest supported and current runner images: netstat's columns differ between them.
+        os: [macos-14, macos-15]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - run: swift build
