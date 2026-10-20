@@ -55,3 +55,13 @@ func spawn(_ path: String, _ args: [String]) throws -> Process {
     try p.run()
     return p
 }
+
+final class FakeBackend: SleepAssertionBackend, @unchecked Sendable {
+    private(set) var live: Set<UInt32> = []
+    private var next: UInt32 = 1
+    func acquire(reason: String) -> UInt32? { defer { next += 1 }; live.insert(next); return next }
+    func release(_ id: UInt32) { live.remove(id) }
+}
+
+let id1 = ProcessIdentity(pid: 101, startTime: 1)
+let id2 = ProcessIdentity(pid: 102, startTime: 1)
