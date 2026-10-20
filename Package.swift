@@ -7,6 +7,10 @@ let package = Package(
     targets: [
         .target(name: "PortlightCore"),
         .executableTarget(name: "Portlight", dependencies: ["PortlightCore"]),
-        .testTarget(name: "PortlightCoreTests", dependencies: ["PortlightCore"]),
+        .testTarget(
+            name: "PortlightCoreTests",
+            dependencies: ["PortlightCore"],
+            resources: [.copy("Fixtures")]
+        ),
     ]
 )
