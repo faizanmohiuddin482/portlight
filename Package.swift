@@ -12,5 +12,6 @@ let package = Package(
             dependencies: ["PortlightCore"],
             resources: [.copy("Fixtures")]
         ),
+        .testTarget(name: "PortlightTests", dependencies: ["Portlight", "PortlightCore"]),
     ]
 )

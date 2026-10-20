@@ -17,6 +17,8 @@ final class PortStore {
     @ObservationIgnored private let scanner: PortScanning
     @ObservationIgnored private let inspector: ProcessInspecting
     @ObservationIgnored private var loop: Task<Void, Never>?
+    @ObservationIgnored private var startedScans = 0
+    @ObservationIgnored private var appliedScan = 0
 
     init(
         stayAwake: StayAwakeManager,
@@ -55,10 +57,16 @@ final class PortStore {
     }
 
     func refresh() async {
+        startedScans += 1
+        let scan = startedScans
         let scanner = scanner, inspector = inspector
         let result = await Task.detached {
             Result { PortCatalog.build(try scanner.scan(), inspector: inspector) }
         }.value
+        // Scans can overlap (timer, panel opening, after a quit); never let an
+        // older one overwrite a newer one, or a just-quit row reappears.
+        guard scan > appliedScan else { return }
+        appliedScan = scan
         switch result {
         case .success(let entries):
             self.entries = entries
