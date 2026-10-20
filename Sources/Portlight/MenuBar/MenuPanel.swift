@@ -9,6 +9,7 @@ struct MenuPanel: View {
         VStack(spacing: 8) {
             StayAwakeTile()
             ListeningTile(showAll: showAllPorts)
+            CleanUpTile()
             PortCheckTile()
             Divider().padding(.vertical, 2)
             footer

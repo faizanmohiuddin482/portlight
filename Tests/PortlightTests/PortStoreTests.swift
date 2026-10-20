@@ -34,3 +34,44 @@ struct NoInspector: ProcessInspecting {
 
     #expect(store.entries.isEmpty)
 }
+
+struct SeededInspector: ProcessInspecting {
+    let seeded: [Int32: ProcessDetails]
+    func details(pid: Int32) -> ProcessDetails? { seeded[pid] }
+    func identity(pid: Int32) -> ProcessIdentity? { seeded[pid]?.identity }
+    func processName(pid: Int32) -> String? { "node" }
+    func cpuTime(pid: Int32) -> TimeInterval? { 1 }
+}
+
+@MainActor final class TestClock {
+    var now = Date(timeIntervalSince1970: 1_000_000)
+}
+
+@MainActor @Test func suggestionsFollowScans() async {
+    let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+        .deletingLastPathComponent().path
+    func node(_ pid: Int32, start: UInt64) -> ProcessDetails {
+        ProcessDetails(
+            identity: ProcessIdentity(pid: pid, startTime: start), executablePath: "/opt/homebrew/bin/node",
+            arguments: ["node", "next", "dev"], workingDirectory: repo, uid: getuid(), parentPid: 500)
+    }
+    let sockets = [
+        ListeningSocket(proto: .tcp, address: "127.0.0.1", port: 3000, pid: 201, processName: "node"),
+        ListeningSocket(proto: .tcp, address: "127.0.0.1", port: 3001, pid: 202, processName: "node"),
+    ]
+    let clock = TestClock()
+    let store = PortStore(
+        stayAwake: StayAwakeManager(),
+        scanner: ScriptedScanner([(0, sockets), (0, sockets)]),
+        inspector: SeededInspector(seeded: [201: node(201, start: 100), 202: node(202, start: 200)]),
+        clock: { clock.now }
+    )
+
+    await store.refresh()
+    #expect(store.suggestions.isEmpty)          // just seen: counts as active
+
+    clock.now += 10 * 60
+    await store.refresh()
+    #expect(store.suggestions.map(\.identity.pid) == [202])
+    #expect(store.suggestion(for: 202)?.reason == .duplicate(project: "portlight", port: 3000))
+}

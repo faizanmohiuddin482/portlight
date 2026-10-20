@@ -17,6 +17,16 @@ struct PortCheckTile: View {
                     Spacer()
                     if let port { verdict(port) }
                 }
+                if let port, let owner = FreePort.owner(of: port, in: store.entries),
+                   QuitPolicy.canQuit(owner.details), let identity = owner.details?.identity {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(store.suggestion(for: owner.pid)?.reason.text ?? "In use now")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        InlineQuitButton(identity: identity).controlSize(.small)
+                    }
+                }
                 if let port, !isFree(port), let next = FreePort.nearestFree(to: port, isFree: isFree) {
                     HStack(spacing: 4) {
                         Text("Nearest free:").foregroundStyle(.secondary)
