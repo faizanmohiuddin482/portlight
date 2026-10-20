@@ -33,6 +33,31 @@ import Testing
         #expect(FreePort.canBind(port) == false)
     }
 
+    @Test func canBindDetectsWildcardListener() throws {
+        let (fd, port) = try listen(on: 0, host: "0.0.0.0")
+        defer { close(fd) }
+        #expect(FreePort.canBind(port) == false)
+    }
+
+    @Test func canBindPortInTimeWait() throws {
+        let (listener, port) = try listen(on: 0)
+        let client = socket(AF_INET, SOCK_STREAM, 0)
+        var addr = sockaddr_in()
+        addr.sin_family = sa_family_t(AF_INET)
+        addr.sin_port = port.bigEndian
+        addr.sin_addr.s_addr = inet_addr("127.0.0.1")
+        let connected = withUnsafePointer(to: &addr) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { connect(client, $0, socklen_t(MemoryLayout<sockaddr_in>.size)) }
+        }
+        try #require(connected == 0)
+        let server = accept(listener, nil, nil)
+        close(server)      // server closes first, so its side of the port enters TIME_WAIT
+        close(listener)
+        usleep(50_000)
+        close(client)
+        #expect(FreePort.canBind(port) == true)
+    }
+
     @Test func canBindFreePort() throws {
         let (fd, port) = try listen(on: 0)
         close(fd)

@@ -31,12 +31,12 @@ final class FakeInspector: ProcessInspecting, @unchecked Sendable {
 struct SocketError: Error { let errno: Int32 }
 
 /// Opens a TCP listener on 127.0.0.1:`port` (0 = any free port). Returns (fd, port).
-func listen(on port: UInt16) throws -> (Int32, UInt16) {
+func listen(on port: UInt16, host: String = "127.0.0.1") throws -> (Int32, UInt16) {
     let fd = socket(AF_INET, SOCK_STREAM, 0)
     var addr = sockaddr_in()
     addr.sin_family = sa_family_t(AF_INET)
     addr.sin_port = port.bigEndian
-    addr.sin_addr.s_addr = inet_addr("127.0.0.1")
+    addr.sin_addr.s_addr = inet_addr(host)
     let bound = withUnsafePointer(to: &addr) {
         $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd, $0, socklen_t(MemoryLayout<sockaddr_in>.size)) }
     }

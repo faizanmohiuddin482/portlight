@@ -6,7 +6,7 @@ public enum FreePort {
     }
 
     /// True only if a TCP socket can bind the port on both the wildcard and
-    /// loopback addresses — i.e. a dev server could start there right now.
+    /// loopback addresses, i.e. a dev server could start there right now.
     public static func canBind(_ port: UInt16) -> Bool {
         tryBind(port, INADDR_ANY) && tryBind(port, INADDR_LOOPBACK)
     }
@@ -22,6 +22,10 @@ public enum FreePort {
         let fd = socket(AF_INET, SOCK_STREAM, 0)
         guard fd >= 0 else { return false }
         defer { close(fd) }
+        // Like Node, Vite and Rails: a port whose old connections linger in
+        // TIME_WAIT is free for a new server, so don't count it as taken.
+        var one: Int32 = 1
+        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, socklen_t(MemoryLayout<Int32>.size))
         var addr = sockaddr_in()
         addr.sin_family = sa_family_t(AF_INET)
         addr.sin_port = port.bigEndian
