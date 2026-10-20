@@ -1,17 +1,31 @@
 import Foundation
 
+public struct ScanResult: Sendable {
+    public let listening: [ListeningSocket]
+    public let connections: [ConnectionKey: Int]
+
+    public init(listening: [ListeningSocket], connections: [ConnectionKey: Int] = [:]) {
+        self.listening = listening
+        self.connections = connections
+    }
+}
+
 public protocol PortScanning: Sendable {
-    func scan() throws -> [ListeningSocket]
+    func scan() throws -> ScanResult
 }
 
 /// Lists every user's listening sockets with `netstat -anv`, which reports
-/// `process:pid` without needing root.
+/// pids without needing root.
 public struct NetstatScanner: PortScanning {
     public init() {}
 
-    public func scan() throws -> [ListeningSocket] {
-        try NetstatParser.parse(run(["-anv", "-p", "tcp"]), proto: .tcp)
-            + NetstatParser.parse(run(["-anv", "-p", "udp"]), proto: .udp)
+    public func scan() throws -> ScanResult {
+        let tcp = try run(["-anv", "-p", "tcp"])
+        return ScanResult(
+            listening: NetstatParser.parse(tcp, proto: .tcp)
+                + NetstatParser.parse(try run(["-anv", "-p", "udp"]), proto: .udp),
+            connections: NetstatParser.connections(tcp)
+        )
     }
 
     private func run(_ args: [String]) throws -> String {

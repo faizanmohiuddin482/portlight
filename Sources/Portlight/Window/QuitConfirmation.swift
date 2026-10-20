@@ -21,16 +21,15 @@ enum QuitFlow {
             if alert.suppressionButton?.state == .on { Preferences.skipQuitConfirmation = true }
         }
 
-        if await store.controller.terminate(identity) == .stillRunning {
+        if await store.quit(identity) == .stillRunning {
             let alert = NSAlert()
             alert.messageText = "“\(name)” didn’t quit."
             alert.informativeText = "It is still running after 3 seconds."
             alert.addButton(withTitle: "Force Quit")
             alert.addButton(withTitle: "Cancel")
             if alert.runModal() == .alertFirstButtonReturn {
-                _ = store.controller.forceKill(identity)
+                _ = await store.forceQuit(identity)
             }
         }
-        await store.refresh()
     }
 }
