@@ -9,11 +9,12 @@ func fixture(_ name: String) throws -> String {
 @testable import PortlightCore
 
 func details(
-    pid: Int32 = 10, cwd: String? = nil, args: [String] = [], path: String? = nil, uid: uid_t = getuid()
+    pid: Int32 = 10, cwd: String? = nil, args: [String] = [], path: String? = nil, uid: uid_t = getuid(),
+    parent: Int32 = 1, groupLeader: Bool = false, start: UInt64 = 1
 ) -> ProcessDetails {
     ProcessDetails(
-        identity: ProcessIdentity(pid: pid, startTime: 1), executablePath: path ?? args.first,
-        arguments: args, workingDirectory: cwd, uid: uid, parentPid: 1
+        identity: ProcessIdentity(pid: pid, startTime: start), executablePath: path ?? args.first,
+        arguments: args, workingDirectory: cwd, uid: uid, parentPid: parent, isGroupLeader: groupLeader
     )
 }
 
@@ -28,6 +29,8 @@ final class FakeInspector: ProcessInspecting, @unchecked Sendable {
     func details(pid: Int32) -> ProcessDetails? { detailCalls.append(pid); return seeded[pid] }
     func identity(pid: Int32) -> ProcessIdentity? { seeded[pid]?.identity }
     func processName(pid: Int32) -> String? { names[pid] }
+    var cpu: [Int32: TimeInterval] = [:]
+    func cpuTime(pid: Int32) -> TimeInterval? { cpu[pid] }
 }
 
 struct SocketError: Error { let errno: Int32 }

@@ -1,4 +1,4 @@
-import Darwin
+import Foundation
 
 /// Reads process details with libproc and sysctl. Works fully for the
 /// current user's processes; for others, fields we may not read come back nil.
@@ -7,6 +7,13 @@ public struct ProcessInspector: ProcessInspecting {
 
     public func identity(pid: Int32) -> ProcessIdentity? {
         bsdInfo(pid).map(Self.identity)
+    }
+
+    public func cpuTime(pid: Int32) -> TimeInterval? {
+        var info = proc_taskinfo()
+        let size = Int32(MemoryLayout<proc_taskinfo>.size)
+        guard proc_pidinfo(pid, PROC_PIDTASKINFO, 0, &info, size) == size else { return nil }
+        return TimeInterval(info.pti_total_user + info.pti_total_system) / 1_000_000_000
     }
 
     public func processName(pid: Int32) -> String? {
@@ -28,7 +35,8 @@ public struct ProcessInspector: ProcessInspecting {
             arguments: arguments(pid),
             workingDirectory: workingDirectory(pid),
             uid: info.pbi_uid,
-            parentPid: Int32(info.pbi_ppid)
+            parentPid: Int32(info.pbi_ppid),
+            isGroupLeader: info.pbi_pgid == info.pbi_pid
         )
     }
 

@@ -19,6 +19,7 @@ struct NoInspector: ProcessInspecting {
     func details(pid: Int32) -> ProcessDetails? { nil }
     func identity(pid: Int32) -> ProcessIdentity? { nil }
     func processName(pid: Int32) -> String? { nil }
+    func cpuTime(pid: Int32) -> TimeInterval? { nil }
 }
 
 @MainActor @Test func olderScanCannotOverwriteNewer() async throws {
