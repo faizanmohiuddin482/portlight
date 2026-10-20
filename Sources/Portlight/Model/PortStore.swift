@@ -61,7 +61,7 @@ final class PortStore {
         let scan = startedScans
         let scanner = scanner, inspector = inspector
         let result = await Task.detached {
-            Result { PortCatalog.build(try scanner.scan(), inspector: inspector) }
+            Result { PortCatalog.build(try scanner.scan().listening, inspector: inspector) }
         }.value
         // Scans can overlap (timer, panel opening, after a quit); never let an
         // older one overwrite a newer one, or a just-quit row reappears.

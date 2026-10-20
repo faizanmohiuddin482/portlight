@@ -8,10 +8,10 @@ final class ScriptedScanner: PortScanning, @unchecked Sendable {
     private let lock = NSLock()
     private var steps: [(delay: TimeInterval, sockets: [ListeningSocket])]
     init(_ steps: [(delay: TimeInterval, sockets: [ListeningSocket])]) { self.steps = steps }
-    func scan() throws -> [ListeningSocket] {
+    func scan() throws -> ScanResult {
         let step = lock.withLock { steps.removeFirst() }
         Thread.sleep(forTimeInterval: step.delay)
-        return step.sockets
+        return ScanResult(listening: step.sockets)
     }
 }
 
