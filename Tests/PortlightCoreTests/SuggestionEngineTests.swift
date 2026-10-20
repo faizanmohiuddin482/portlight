@@ -47,7 +47,7 @@ private func suggest(
 }
 
 @Test func orphanSuggested() {
-    let s = suggest([entry(3000, pid: 101, parent: 1)], idle: 10 * 60)
+    let s = suggest([entry(3000, pid: 101, parent: 1)], idle: 31 * 60)
     #expect(s.first?.reason == .orphaned)
 }
 
@@ -113,4 +113,21 @@ private func suggest(
     #expect(SuggestionReason.exposedIdle(9 * hour).text == "Open to your network and idle 9h")
     #expect(SuggestionReason.idle(9 * hour).text == "Idle 9h, no connections")
     #expect(SuggestionReason.idle(2.5 * hour).text == "Idle 2h 30m, no connections")
+}
+
+@Test func olderTwinNeverSuggestedAlongsideNewer() {
+    // Older twin idle 3 h, newer idle 10 min: suggesting both would kill the project's only servers.
+    let s = suggest([entry(3000, pid: 101, start: 100), entry(3001, pid: 102, start: 200)], active: [101: 3 * hour, 102: 10 * 60])
+    #expect(s.map(\.identity.pid) == [102])
+}
+
+@Test func unrecognisedLabelsAreNotDuplicates() {
+    // `node api.js` and `node mock.js` both fall back to the label "node".
+    let s = suggest([entry(4000, pid: 101, label: "node", start: 100), entry(4001, pid: 102, label: "node", start: 200)], idle: 10 * 60)
+    #expect(s.isEmpty)
+}
+
+@Test func orphanNeedsProjectAndHalfHourIdle() {
+    #expect(suggest([entry(2019, pid: 101, label: "caddy", project: nil, parent: 1)], idle: 3 * hour).first?.reason != .orphaned)
+    #expect(suggest([entry(3000, pid: 101, parent: 1)], idle: 29 * 60).isEmpty)
 }
