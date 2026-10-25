@@ -4,14 +4,14 @@ import Testing
 
 @MainActor @Test func holdsAssertionWhileActive() {
     let b = FakeBackend(); let m = StayAwakeManager(backend: b)
-    m.start(id1, name: "api-v3", duration: nil)
+    m.start(id1, name: "api", duration: nil)
     #expect(m.isActive)
     #expect(b.live.count == 1)
 }
 
 @MainActor @Test func releasesOnExit() {
     let b = FakeBackend(); let m = StayAwakeManager(backend: b)
-    m.start(id1, name: "api-v3", duration: nil)
+    m.start(id1, name: "api", duration: nil)
     m.tick(now: .now, isAlive: { _ in false })
     #expect(m.holds.isEmpty)
     #expect(b.live.isEmpty)

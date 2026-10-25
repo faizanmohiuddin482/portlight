@@ -13,7 +13,7 @@ Claude does 100% of the coding, testing and repo management. The owner steers, j
 ## Goals
 
 1. See every listening port at a glance: port, process, PID, user, TCP/UDP, local vs network-reachable, uptime, connection count.
-2. Readable names: work out the project from the process's working directory and command line (e.g. `node` on 3000 → "qureos-frontend · next dev").
+2. Readable names: work out the project from the process's working directory and command line (e.g. `node` on 3000 → "my-app · next dev").
 3. Check whether a port is free and suggest the nearest free one.
 4. Quit a process from its row.
 5. **Keep awake**, at two levels:
@@ -112,7 +112,7 @@ Follow Apple's Human Interface Guidelines: SF Pro, SF Symbols, system colours (b
 
 Port-viewer Mac apps already exist: Portero (open source), PortCleaner (paid, $4.99), Portie, Port Kill, and PortlessBar. There is also an unrelated Docker dashboard called "port-light". Listing and killing ports is not new, so the README and posts must lead with what is different:
 1. **Keep awake per process**, including lid closed with safeguards. None of the apps above combine this with port management.
-2. **Project awareness**: "qureos-frontend · next dev", not "node".
+2. **Project awareness**: "my-app · next dev", not "node".
 3. **Feels Apple-made**: Control Center panel plus a System Settings-style window.
 4. Security glance (network-exposed ports) and one-tap zombie cleanup.
 

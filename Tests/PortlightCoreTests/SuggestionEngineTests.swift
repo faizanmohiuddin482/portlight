@@ -107,8 +107,8 @@ private func suggest(
 }
 
 @Test func reasonText() {
-    #expect(SuggestionReason.duplicate(project: "qureos-frontend", port: 3000).text
-        == "Duplicate. qureos-frontend is already running on :3000")
+    #expect(SuggestionReason.duplicate(project: "my-app", port: 3000).text
+        == "Duplicate. my-app is already running on :3000")
     #expect(SuggestionReason.orphaned.text == "Orphaned. The terminal that started it has closed")
     #expect(SuggestionReason.exposedIdle(9 * hour).text == "Open to your network and idle 9h")
     #expect(SuggestionReason.idle(9 * hour).text == "Idle 9h, no connections")
