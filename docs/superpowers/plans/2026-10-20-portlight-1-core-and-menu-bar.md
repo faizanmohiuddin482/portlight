@@ -44,7 +44,7 @@
 **Interfaces:**
 - Produces: targets `PortlightCore` (library), `Portlight` (executable), `PortlightCoreTests`; `scripts/test.sh [swift test args]`.
 
-- [ ] **Step 1:** `git init` in `/Users/marwah/src/portlight`, branch `main`. `.gitignore`: `.build/`, `build/`, `.swiftpm/`, `.superpowers/`, `*.xcodeproj/xcuserdata`, `.DS_Store`.
+- [ ] **Step 1:** `git init` in `~/src/portlight`, branch `main`. `.gitignore`: `.build/`, `build/`, `.swiftpm/`, `.superpowers/`, `*.xcodeproj/xcuserdata`, `.DS_Store`.
 - [ ] **Step 2:** `Package.swift`: `swift-tools-version:6.0`, `platforms: [.macOS(.v14)]`, the three targets above.
 - [ ] **Step 3:** `PortlightApp.swift`: `@main struct PortlightApp: App` with a `MenuBarExtra("Portlight", systemImage: "light.beacon.max")` showing `Text("Portlight")`, `.menuBarExtraStyle(.window)`.
 - [ ] **Step 4:** Smoke test:
@@ -174,10 +174,10 @@ Project name rule: walk up from `workingDirectory` (stop at `$HOME` or `/`) to t
 
 ```swift
 @Test func findsProjectFromCwd() {
-    let d = details(cwd: "/Users/me/src/qureos-frontend/apps/web", args: ["node", "/x/node_modules/.bin/next", "dev"])
+    let d = details(cwd: "/Users/me/src/my-app/apps/web", args: ["node", "/x/node_modules/.bin/next", "dev"])
     let info = ProjectResolver.resolve(processName: "node", details: d,
-        fileExists: { $0 == "/Users/me/src/qureos-frontend/.git" })
-    #expect(info == ProjectInfo(name: "qureos-frontend", label: "next dev"))
+        fileExists: { $0 == "/Users/me/src/my-app/.git" })
+    #expect(info == ProjectInfo(name: "my-app", label: "next dev"))
 }
 @Test func fallsBackToProcessName() {
     #expect(ProjectResolver.resolve(processName: "rapportd", details: nil) == ProjectInfo(name: nil, label: "rapportd"))
@@ -282,7 +282,7 @@ Fixture `pmset-assertions.txt`: the sample captured during planning (caffeinate 
 ```swift
 @MainActor @Test func releasesOnExit() {
     let b = FakeBackend(); let m = StayAwakeManager(backend: b)
-    m.start(id1, name: "api-v3", duration: nil)
+    m.start(id1, name: "api", duration: nil)
     m.tick(now: .now, isAlive: { _ in false })
     #expect(m.holds.isEmpty); #expect(b.live.isEmpty)
 }

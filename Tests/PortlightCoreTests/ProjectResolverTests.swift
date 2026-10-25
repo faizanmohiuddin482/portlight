@@ -3,11 +3,11 @@ import Testing
 @testable import PortlightCore
 
 @Test func findsProjectFromCwd() {
-    let d = details(cwd: "/Users/me/src/qureos-frontend/apps/web", args: ["node", "/x/node_modules/.bin/next", "dev"])
+    let d = details(cwd: "/Users/me/src/my-app/apps/web", args: ["node", "/x/node_modules/.bin/next", "dev"])
     let info = ProjectResolver.resolve(
         processName: "node", details: d,
-        fileExists: { $0 == "/Users/me/src/qureos-frontend/.git" })
-    #expect(info == ProjectInfo(name: "qureos-frontend", label: "next dev"))
+        fileExists: { $0 == "/Users/me/src/my-app/.git" })
+    #expect(info == ProjectInfo(name: "my-app", label: "next dev"))
 }
 
 @Test func nearestMarkerWins() {
@@ -32,10 +32,10 @@ import Testing
 }
 
 @Test func usesAbsoluteArgWhenNoCwd() {
-    let d = details(cwd: nil, args: ["node", "/Users/me/src/api-v3/dist/main.js"])
+    let d = details(cwd: nil, args: ["node", "/Users/me/src/api/dist/main.js"])
     let info = ProjectResolver.resolve(
-        processName: "node", details: d, fileExists: { $0 == "/Users/me/src/api-v3/package.json" })
-    #expect(info.name == "api-v3")
+        processName: "node", details: d, fileExists: { $0 == "/Users/me/src/api/package.json" })
+    #expect(info.name == "api")
 }
 
 @Test func stopsAtHome() {

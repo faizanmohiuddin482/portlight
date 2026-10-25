@@ -1,7 +1,7 @@
 import Foundation
 
 public struct ProjectInfo: Sendable, Equatable {
-    /// Project folder name, e.g. "qureos-frontend"; nil when we can't tell.
+    /// Project folder name, e.g. "my-app"; nil when we can't tell.
     public let name: String?
     /// What the process is doing, e.g. "next dev"; falls back to the process name.
     public let label: String
@@ -12,7 +12,7 @@ public struct ProjectInfo: Sendable, Equatable {
     }
 }
 
-/// Turns `node` on :3000 into "qureos-frontend · next dev".
+/// Turns `node` on :3000 into "my-app · next dev".
 public enum ProjectResolver {
     static let markers = ["package.json", ".git", "Cargo.toml", "go.mod", "pyproject.toml", "Gemfile", "Package.swift"]
     static let knownServers: Set = ["postgres", "mongod", "redis-server", "mysqld"]
