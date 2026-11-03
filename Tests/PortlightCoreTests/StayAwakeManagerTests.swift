@@ -62,3 +62,52 @@ import Testing
     defer { m.stopAll() }
     #expect(currentSleepAssertions().contains { $0.name == "Portlight: keeping awake for portlight-test" })
 }
+
+@MainActor @Test func macHoldNeedsNoProcess() {
+    let b = FakeBackend(); let m = StayAwakeManager(backend: b)
+    m.startMac(duration: nil)
+    #expect(m.isActive)
+    #expect(m.macHold != nil)
+    #expect(m.holds.isEmpty)
+    #expect(b.live.count == 1)
+    m.tick(now: .now.addingTimeInterval(86_400 * 30), isAlive: { _ in false })
+    #expect(m.isActive)
+    m.stopMac()
+    #expect(!m.isActive)
+    #expect(b.live.isEmpty)
+}
+
+@MainActor @Test func macHoldReleasesOnDeadline() {
+    let b = FakeBackend(); let m = StayAwakeManager(backend: b); let t0 = Date()
+    m.startMac(duration: 3600, now: t0)
+    m.tick(now: t0.addingTimeInterval(3599), isAlive: { _ in true })
+    #expect(m.macHold != nil)
+    m.tick(now: t0.addingTimeInterval(3600), isAlive: { _ in true })
+    #expect(m.macHold == nil)
+    #expect(b.live.isEmpty)
+}
+
+@MainActor @Test func macHoldRestartReplacesAssertion() {
+    let b = FakeBackend(); let m = StayAwakeManager(backend: b); let t0 = Date()
+    m.startMac(duration: 60, now: t0)
+    m.startMac(duration: nil, now: t0)
+    #expect(b.live.count == 1)
+    #expect(m.macHold?.deadline == nil)
+}
+
+@MainActor @Test func stopAllReleasesMacAndProcessHolds() {
+    let b = FakeBackend(); let m = StayAwakeManager(backend: b)
+    m.startMac(duration: nil)
+    m.start(id1, name: "a", duration: nil)
+    #expect(b.live.count == 2)
+    m.stopAll()
+    #expect(!m.isActive)
+    #expect(b.live.isEmpty)
+}
+
+@MainActor @Test func realMacAssertionShowsInPmset() {
+    let m = StayAwakeManager()
+    m.startMac(duration: nil)
+    defer { m.stopAll() }
+    #expect(currentSleepAssertions().contains { $0.name == "Portlight: keeping this Mac awake" })
+}
